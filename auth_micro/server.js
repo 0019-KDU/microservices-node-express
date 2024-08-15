@@ -14,6 +14,10 @@ app.get("/", (req, res) => {
   return res.json({ message: "It's working" });
 });
 
+//* Routes
+import Routes from "./routes/index.js";
+app.use(Routes);
+
 app.listen(PORT, (req, res) => {
   console.log(`Server is running on port ${PORT}`);
 });

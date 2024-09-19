@@ -37,34 +37,44 @@ class AuthController {
     try {
       const { email, password } = req.body;
 
+      // Check if user exists in the database
       const user = await prisma.user.findUnique({ where: { email } });
 
-      if (user) {
-        //check both  password
-        if (!bcrypt.compareSync(password, user.password)) {
-          return res.status(401).json({
-            status: "error",
-            message: "Invalid credentials",
-          });
-        }
-        const payload = {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
-
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {
-          expiresIn: "1h",
-        });
-        return res.status(200).json({
-          status: "success",
-          message: "Logged in successfully",
-          data: { token },
+      if (!user) {
+        return res.status(401).json({
+          status: "error",
+          message: "Invalid credentials",
         });
       }
-      return res.status(401).json({
-        status: "error",
-        message: "Invalid credentials",
+
+      // Compare provided password with the stored hash
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({
+          status: "error",
+          message: "Invalid credentials",
+        });
+      }
+
+      // Create the payload for the JWT
+      const payload = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      };
+
+      // Sign the token
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "1h", // Token expires in 1 hour
+      });
+
+      // Return success response with the token
+      return res.status(200).json({
+        status: "success",
+        message: "Logged in successfully",
+        data: {
+          token,
+        },
       });
     } catch (error) {
       console.error("Login Error: ", error);
@@ -73,6 +83,13 @@ class AuthController {
         message: "Something went wrong, please try again",
       });
     }
+  }
+  static async user(req, res) {
+    const user = req.user;
+    return res.status(200).json({
+      status: "success",
+      message: "User details",
+    });
   }
 }
 

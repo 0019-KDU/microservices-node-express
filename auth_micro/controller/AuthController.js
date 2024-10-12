@@ -38,7 +38,10 @@ class AuthController {
       const { email, password } = req.body;
 
       // Check if user exists in the database
-      const user = await prisma.user.findUnique({ where: { email } });
+      const user = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true, email: true, name: true },
+      });
 
       if (!user) {
         return res.status(401).json({

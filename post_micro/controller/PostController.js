@@ -1,4 +1,5 @@
 import prisma from "../config/db.config.js";
+import axios from "axios";
 
 class PostController {
   static async index(req, res) {
@@ -6,10 +7,28 @@ class PostController {
       // Fetch all posts from the database
       const posts = await prisma.post.findMany({});
 
+      let userIds = [];
+      posts.forEach((item) => {
+        userIds.push(item.user_id);
+      });
+
+      let postWithUser = await Promise.all(
+        posts.map(async (post) => {
+          const res = await axios.get(
+            `${process.env.AUTH_MICRO_URL}/api/getUser/${post.user_id}`
+          );
+
+          return {
+            ...post,
+            ...res.data,
+          };
+        })
+      );
+
       // Return success response
       return res.status(200).json({
         status: "success",
-        data: posts,
+        data: postWithUser,
       });
     } catch (error) {
       console.error("Error fetching posts:", error.message); // Logging error for debugging

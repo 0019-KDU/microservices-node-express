@@ -11,17 +11,42 @@ class PostController {
       posts.forEach((item) => {
         userIds.push(item.user_id);
       });
+      // * Method 1
+      // let postWithUser = await Promise.all(
+      //   posts.map(async (post) => {
+      //     const res = await axios.get(
+      //       `${process.env.AUTH_MICRO_URL}/api/getUser/${post.user_id}`
+      //     );
 
+      //     return {
+      //       ...post,
+      //       ...res.data,
+      //     };
+      //   })
+      // );
+
+      const response = await axios.post(
+        `${process.env.AUTH_MICRO_URL}/api/getAllUsers/`,
+        userIds
+      );
+
+      const users = {};
+      response.data.users.forEach((item) => {
+        users[item.id] = item;
+      });
+      // * Method 2
+      // let postWithUser = await Promise.all(
+      //   posts.map((posts) => {
+      //     const user = users.find((item) => item.id === posts.user_id);
+      //     return { ...posts, user };
+      //   })
+      // );
+
+      // * Method 3
       let postWithUser = await Promise.all(
-        posts.map(async (post) => {
-          const res = await axios.get(
-            `${process.env.AUTH_MICRO_URL}/api/getUser/${post.user_id}`
-          );
-
-          return {
-            ...post,
-            ...res.data,
-          };
+        posts.map((post) => {
+          const user = users[post.user_id];
+          return { ...post, user };
         })
       );
 

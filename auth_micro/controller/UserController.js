@@ -28,45 +28,62 @@ class UserController {
     }
   }
 
+  // static async getUsers(req, res) {
+  //   try {
+  //     // Validate input
+  //     const { userIds } = req.body;
+  //     if (!Array.isArray(userIds) || userIds.length === 0) {
+  //       return res
+  //         .status(400)
+  //         .json({
+  //           message: "Invalid input: userIds must be a non-empty array.",
+  //         });
+  //     }
+
+  //     // Fetch users from the database
+  //     const users = await prisma.user.findMany({
+  //       where: {
+  //         id: {
+  //           in: userIds,
+  //         },
+  //       },
+  //       select: {
+  //         id: true,
+  //         name: true,
+  //         email: true,
+  //       },
+  //     });
+
+  //     // Check if users were found
+  //     if (users.length === 0) {
+  //       return res
+  //         .status(404)
+  //         .json({ message: "No users found with the provided IDs." });
+  //     }
+
+  //     // Return successful response
+  //     return res.status(200).json({ users });
+  //   } catch (error) {
+  //     console.error("Error fetching users:", error);
+  //     return res.status(500).json({ message: "Internal Server Error" });
+  //   }
+  // }
   static async getUsers(req, res) {
-    try {
-      // Validate input
-      const { userIds } = req.body;
-      if (!Array.isArray(userIds) || userIds.length === 0) {
-        return res
-          .status(400)
-          .json({
-            message: "Invalid input: userIds must be a non-empty array.",
-          });
-      }
-
-      // Fetch users from the database
-      const users = await prisma.user.findMany({
-        where: {
-          id: {
-            in: userIds,
-          },
+    const { userIds } = req.body;
+    const users = await prisma.user.findMany({
+      where: {
+        id: {
+          in: userIds,
         },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      });
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
 
-      // Check if users were found
-      if (users.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "No users found with the provided IDs." });
-      }
-
-      // Return successful response
-      return res.status(200).json({ users });
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      return res.status(500).json({ message: "Internal Server Error" });
-    }
+    return res.json({ users: users });
   }
 }
 

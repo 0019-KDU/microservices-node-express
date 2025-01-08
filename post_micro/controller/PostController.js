@@ -49,6 +49,8 @@ class PostController {
       return res.status(500).json({ message: "Something went wrong." });
     }
   }
+
+  
   static async store(req, res) {
     try {
       const authUser = req.user; // Use req.user instead of req.authUser

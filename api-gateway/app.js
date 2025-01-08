@@ -1,8 +1,8 @@
 import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-const app = express();
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // Disable SSL verification for testing
+// const app = express();
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // Disable SSL verification for testing
 
 // Define routes and their ports
 const routes = {
